@@ -13,6 +13,7 @@ public class UsersTypeService {
 
     private final UsersTypeRepository usersTypeRepository;
 
+    @Autowired
     public UsersTypeService(UsersTypeRepository usersTypeRepository) {
         this.usersTypeRepository = usersTypeRepository;
     }
