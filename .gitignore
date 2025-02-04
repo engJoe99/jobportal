@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Summernote ###
+/src/main/resources/static/summernote/
