@@ -1,12 +1,12 @@
 package com.luv2code.jobportal.config;
 
-
 import com.luv2code.jobportal.services.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,87 +16,80 @@ import org.springframework.security.web.SecurityFilterChain;
 public class WebSecurityConfig {
 
     private final CustomUserDetailsService customUserDetailsService;
+    private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
     @Autowired
-    public WebSecurityConfig(CustomUserDetailsService customUserDetailsService) {
+    public WebSecurityConfig(CustomUserDetailsService customUserDetailsService, CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler) {
         this.customUserDetailsService = customUserDetailsService;
+        this.customAuthenticationSuccessHandler = customAuthenticationSuccessHandler;
     }
 
+    private final String[] publicUrl = {"/",
+            "/global-search/**",
+            "/register",
+            "/register/**",
+            "/webjars/**",
+            "/resources/**",
+            "/assets/**",
+            "/css/**",
+            "/summernote/**",
+            "/js/**",
+            "/*.css",
+            "/*.js",
+            "/*.js.map",
+            "/fonts**", "/favicon.ico", "/resources/**", "/error"};
 
-private final String[] publicUrl = {
-            "/",                  // Homepage
-            "/global-search/**",  // Search functionality
-            "/register",          // Registration pages
-            "/register/**",       // All registration-related URLs
-            "/webjars/**",        // External libraries
-            "/resources/**",      // Static resources
-            "/assets/**",         // Assets like images
-            "/css/**",            // CSS files
-            "/summernote/**",     // Rich text editor resources
-            "/js/**",             // JavaScript files
-            "/*.css",             // Root-level CSS files
-            "/*.js",              // Root-level JS files
-            "/*.js.map",          // Source maps for JS
-            "/fonts**",           // Font files
-            "/favicon.ico",       // Browser favicon
-            "/error",             // Error pages
-    };
-
-
-    /**
-     * Configures the security filter chain for HTTP requests
-     * This bean defines the authentication and authorization rules
-     *
-     * @param http The HttpSecurity object to configure
-     * @return The configured SecurityFilterChain
-     * @throws Exception if there is an error configuring security
-     */
     @Bean
+    // Configure the security filter chain for HTTP requests
     protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        // Set the authentication provider that will validate credentials
-        http.authenticationProvider(authenticationprovider());
+        // Set the authentication provider
+        http.authenticationProvider(authenticationProvider());
 
-        // Configure authorization rules for HTTP requests
+        // Configure authorization rules
         http.authorizeHttpRequests(auth -> {
-            auth.requestMatchers(publicUrl).permitAll();  // Allow unrestricted access to public URLs defined in publicUrl array
-            auth.anyRequest().authenticated();            // Require authentication for all other URLs not in publicUrl
+            // Allow public access to URLs defined in publicUrl array
+            auth.requestMatchers(publicUrl).permitAll();
+            // Require authentication for all other requests
+            auth.anyRequest().authenticated();
         });
+
+        // Configure form login, logout, CORS and CSRF settings
+        http.formLogin(form->form.loginPage("/login").permitAll()
+                        .successHandler(customAuthenticationSuccessHandler))
+                .logout(logout-> {
+                    // Set logout URL and redirect URL after logout
+                    logout.logoutUrl("/logout");
+                    logout.logoutSuccessUrl("/");
+                }).cors(Customizer.withDefaults()) // Enable CORS with default settings
+                .csrf(csrf->csrf.disable()); // Disable CSRF protection
+
+        // Build and return the security filter chain
         return http.build();
     }
 
 
+
+
     /**
      * Creates and configures the authentication provider bean
-     * This provider is responsible for validating user credentials during authentication
-     *
-     * @return A configured DaoAuthenticationProvider that uses BCrypt password encoding
+     * This provider handles the authentication process using DAOs
+     * @return Configured DaoAuthenticationProvider instance
      */
     @Bean
-    protected AuthenticationProvider authenticationprovider() {
-
-        // Create a new DAO-based authentication provider
+    public AuthenticationProvider authenticationProvider() {
+        // Create new DAO-based authentication provider
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-
-        // Configure the password encoder to use BCrypt hashing
+        // Set password encoder for secure password handling
         authenticationProvider.setPasswordEncoder(passwordEncoder());
-
-        // Set the custom user details service for authentication
+        // Set custom user details service for user lookup
         authenticationProvider.setUserDetailsService(customUserDetailsService);
-
         return authenticationProvider;
     }
 
 
-
-    /**
-     * Creates a password encoder bean that uses BCrypt hashing algorithm
-     * BCrypt automatically handles salt generation and storage
-     *
-     * @return A BCryptPasswordEncoder instance for secure password hashing
-     */
     @Bean
-    protected PasswordEncoder passwordEncoder() {
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 }

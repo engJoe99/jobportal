@@ -12,7 +12,7 @@ import java.util.List;
 
 public class CustomUserDetails implements UserDetails {
 
-    private final Users user;
+    private Users user;
 
     public CustomUserDetails(Users user) {
         this.user = user;
@@ -20,58 +20,40 @@ public class CustomUserDetails implements UserDetails {
 
     /**
      * Returns the authorities/roles granted to the user
-     * This method is part of the UserDetails interface implementation
      *
      * @return Collection of GrantedAuthority objects representing user's roles
      */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Get the user type (role) associated with this user
+        // Get the user type (role) from the user object
         UsersType usersType = user.getUserTypeId();
-        // Create a list to store the authorities
+        // Create list to store authorities
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        // Add the user type name as a SimpleGrantedAuthority
+        // Add the user type name as a granted authority
         authorities.add(new SimpleGrantedAuthority(usersType.getUserTypeName()));
         return authorities;
     }
 
 
-    /**
-     * Returns the password of the user
-     * This method is part of the UserDetails interface implementation
-     *
-     * @return String containing the user's password
-     */
     @Override
     public String getPassword() {
         return user.getPassword();
     }
 
-
-    /**
-     * Returns the email address of the user as their username
-     * This method is part of the UserDetails interface implementation
-     *
-     * @return String containing the user's email address which serves as their username
-     */
     @Override
     public String getUsername() {
         return user.getEmail();
     }
-
 
     @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
-
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
-
-
 
     @Override
     public boolean isCredentialsNonExpired() {
@@ -82,4 +64,6 @@ public class CustomUserDetails implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+
 }

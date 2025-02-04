@@ -8,6 +8,12 @@ import com.luv2code.jobportal.repository.JobSeekerProfileRepository;
 import com.luv2code.jobportal.repository.RecruiterProfileRepository;
 import com.luv2code.jobportal.repository.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -19,58 +25,87 @@ public class UsersService {
     private final UsersRepository usersRepository;
     private final JobSeekerProfileRepository jobSeekerProfileRepository;
     private final RecruiterProfileRepository recruiterProfileRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public UsersService(UsersRepository usersRepository,
                         JobSeekerProfileRepository jobSeekerProfileRepository,
-                        RecruiterProfileRepository recruiterProfileRepository) {
+                        RecruiterProfileRepository recruiterProfileRepository,
+                        PasswordEncoder passwordEncoder) {
         this.usersRepository = usersRepository;
         this.jobSeekerProfileRepository = jobSeekerProfileRepository;
         this.recruiterProfileRepository = recruiterProfileRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
-
-
-    /**
-     * Adds a new user and creates the corresponding profile based on a user type
-     * @param users The user object to be added
-     * @return The saved user object
-     */
+    // Method to add a new user to the system
     public Users addNew(Users users) {
-
-        // Set user as active by default
+        // Set user as active and set registration date to current time
         users.setActive(true);
-
-        // Set registration date to current timestamp
         users.setRegistrationDate(new Date(System.currentTimeMillis()));
 
-        // Save the user to database
-        Users savedUser = usersRepository.save(users);
-        System.out.println("===>>> savedUser" + savedUser);
+        // Encode the password before saving
+        users.setPassword(passwordEncoder.encode(users.getPassword()));
 
-        // Get user type ID to determine profile type
+        // Save the user to the database
+        Users savedUser = usersRepository.save(users);
+
+        // Get the user type ID to determine if recruiter or job seeker
         int userTypeId = users.getUserTypeId().getUserTypeId();
 
-        // User type 1 is recruiter - create recruiter profile
-        if(userTypeId == 1) {
+        // If userTypeId is 1, create recruiter profile
+        if (userTypeId == 1) {
             recruiterProfileRepository.save(new RecruiterProfile(savedUser));
-
-        // Other user types are job seekers - create job seeker profile
-        } else {
+        }
+        // Otherwise create job seeker profile
+        else {
             jobSeekerProfileRepository.save(new JobSeekerProfile(savedUser));
         }
 
+        // Return the saved user object
         return savedUser;
     }
 
 
+    /**
+     * Gets the profile of the currently authenticated user
+     * @return RecruiterProfile or JobSeekerProfile object if user is authenticated, null otherwise
+     */
+    public Object getCurrentUserProfile() {
+
+        // Get the current authentication context
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // Check if user is authenticated (not anonymous)
+        if (!(authentication instanceof AnonymousAuthenticationToken)) {
+            // Get username (email) from authentication
+            String username = authentication.getName();
+            // Find user by email or throw exception if not found
+            Users users = usersRepository.findByEmail(username).orElseThrow(()-> new UsernameNotFoundException("Could not found " + "user"));
+            int userId = users.getUserId();
+
+            // Check if user has Recruiter role
+            if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("Recruiter"))) {
+                // Return recruiter profile for the user ID
+                RecruiterProfile recruiterProfile = recruiterProfileRepository.findById(userId).orElse(new RecruiterProfile());
+                return recruiterProfile;
+            } else {
+                // Return job seeker profile for the user ID
+                JobSeekerProfile jobSeekerProfile = jobSeekerProfileRepository.findById(userId).orElse(new JobSeekerProfile());
+                return jobSeekerProfile;
+            }
+        }
+
+        // Return null if user is not authenticated
+        return null;
+    }
+
+
+
 
     public Optional<Users> getUserByEmail(String email) {
-        System.out.println("==> Searching for email: " + email);
-        Optional<Users> result = usersRepository.findByEmail(email);
-        System.out.println("==> Found User: " + result.isPresent());
-        return result;
+        return usersRepository.findByEmail(email);
     }
 
 }
