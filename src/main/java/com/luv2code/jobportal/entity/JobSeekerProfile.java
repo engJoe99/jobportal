@@ -1,6 +1,5 @@
 package com.luv2code.jobportal.entity;
 
-
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -10,26 +9,26 @@ import java.util.List;
 public class JobSeekerProfile {
 
     @Id
-    private int userAccountId;
+    private Integer userAccountId;
 
     @OneToOne
-    @JoinColumn(name = "user_account_id")
+    @JoinColumn(name = "userAccountId")
     @MapsId
     private Users userId;
 
     private String firstName;
+    private String lastName;
     private String city;
     private String state;
-    private String Country;
+    private String country;
     private String workAuthorization;
+    private String employmentType;
     private String resume;
 
     @Column(nullable = true, length = 64)
     private String profilePhoto;
 
-    @OneToMany(targetEntity = Skills.class,
-                cascade = CascadeType.ALL,
-                mappedBy = "jobSeekerProfile")
+    @OneToMany(targetEntity = Skills.class, cascade = CascadeType.ALL, mappedBy = "jobSeekerProfile")
     private List<Skills> skills;
 
     public JobSeekerProfile() {
@@ -39,27 +38,29 @@ public class JobSeekerProfile {
         this.userId = userId;
     }
 
-    public JobSeekerProfile(int userAccountId, Users userId, String firstName,
+    public JobSeekerProfile(Integer userAccountId, Users userId, String firstName, String lastName,
                             String city, String state, String country, String workAuthorization,
-                            String resume, String profilePhoto, List<Skills> skills) {
+                            String employmentType, String resume, String profilePhoto, List<Skills> skills) {
 
         this.userAccountId = userAccountId;
         this.userId = userId;
         this.firstName = firstName;
+        this.lastName = lastName;
         this.city = city;
         this.state = state;
-        Country = country;
+        this.country = country;
         this.workAuthorization = workAuthorization;
+        this.employmentType = employmentType;
         this.resume = resume;
         this.profilePhoto = profilePhoto;
         this.skills = skills;
     }
 
-    public int getUserAccountId() {
+    public Integer getUserAccountId() {
         return userAccountId;
     }
 
-    public void setUserAccountId(int userAccountId) {
+    public void setUserAccountId(Integer userAccountId) {
         this.userAccountId = userAccountId;
     }
 
@@ -79,6 +80,14 @@ public class JobSeekerProfile {
         this.firstName = firstName;
     }
 
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
     public String getCity() {
         return city;
     }
@@ -96,11 +105,11 @@ public class JobSeekerProfile {
     }
 
     public String getCountry() {
-        return Country;
+        return country;
     }
 
     public void setCountry(String country) {
-        Country = country;
+        this.country = country;
     }
 
     public String getWorkAuthorization() {
@@ -109,6 +118,14 @@ public class JobSeekerProfile {
 
     public void setWorkAuthorization(String workAuthorization) {
         this.workAuthorization = workAuthorization;
+    }
+
+    public String getEmploymentType() {
+        return employmentType;
+    }
+
+    public void setEmploymentType(String employmentType) {
+        this.employmentType = employmentType;
     }
 
     public String getResume() {
@@ -135,21 +152,26 @@ public class JobSeekerProfile {
         this.skills = skills;
     }
 
+    @Transient
+    public String getPhotosImagePath() {
+        if (profilePhoto == null || userAccountId == null) return null;
+        return "photos/candidate/" + userAccountId + "/" + profilePhoto;
+    }
+
     @Override
     public String toString() {
         return "JobSeekerProfile{" +
                 "userAccountId=" + userAccountId +
                 ", userId=" + userId +
                 ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
                 ", city='" + city + '\'' +
                 ", state='" + state + '\'' +
-                ", Country='" + Country + '\'' +
+                ", country='" + country + '\'' +
                 ", workAuthorization='" + workAuthorization + '\'' +
+                ", employmentType='" + employmentType + '\'' +
                 ", resume='" + resume + '\'' +
                 ", profilePhoto='" + profilePhoto + '\'' +
-                ", skills=" + skills +
                 '}';
     }
-
-
 }

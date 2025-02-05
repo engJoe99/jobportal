@@ -6,35 +6,25 @@
 <head>
     <meta charset="UTF-8"/>
     <title>Dashboard</title>
-    <link
-            th:rel="stylesheet"
-            th:href="@{/webjars/bootstrap/css/bootstrap.min.css} "
-    />
-    <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-    />
-    <link
-            rel="stylesheet"
-            type="text/css"
-            media="all"
-            th:href="@{/css/styles.css}"
-    />
-    <link
-            href="https://fonts.googleapis.com/css?family=Montserrat"
-            rel="stylesheet"
-    />
-    <meta charset="ISO-8859-1"/>
+    <meta charset="utf-8"/>
+    <meta http-equiv="x-ua-compatible" content="ie=edge"/>
+    <meta name="description" content=""/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <link rel="stylesheet" type="text/css" media="all" th:href="@{/css/styles.css}"/>
+    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css} "/>
+    <link th:rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.css}"/>
 
 </head>
 
 <body>
 <header class="navbar navbar-expand-lg navbar-dark">
-    <label class="mt-2 ms-5 font-weight-bold h5">
-        <a th:href="@{/dashboard/}"><i class="fas fa-coffee"></i> hotdevjobs</a>
-        <span class="logo_com font-weight-bold h5" style="color: white">
-          .com</span>
-    </label>
+    <label class="mt-2 ms-5 font-weight-bold h5"
+    ><a th:href="@{/dashboard}">hotdevjobs</a
+    ><span class="logo_com font-weight-bold h5" style="color: white">
+          .com</span
+    ></label
+    >
     <button
             class="navbar-toggler"
             type="button"
@@ -51,29 +41,33 @@
         <ul class="navbar-nav m-auto mt-2 mt-lg-0">
 
             <li class="nav-item active">
-                <a sec:authorize="hasAuthority('Job Seeker')" class="nav-link" th:href="@{/dashboard/}">
-                    <i class="fas fa-search"></i> Search for Jobs</a>
+                <a sec:authorize="hasAuthority('Job Seeker')" class="nav-link" th:href="@{/dashboard}"
+                ><i class="fas fa-search"></i>Search for Jobs</a
+                >
             </li>
-            <li class="nav-item">
+            <li class="nav-item ">
                 <a sec:authorize="hasAuthority('Job Seeker')" class="nav-link" th:href="@{/saved-jobs/}">
-                    <i class="fas fa-eye"></i> View Saved Jobs</a>
+                    <i class="fa-solid fa-eye"></i>View Saved Jobs</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item ">
                 <a sec:authorize="hasAuthority('Job Seeker')" class="nav-link" th:href="@{/job-seeker-profile/}">
-                    <i class="fas fa-pencil-alt"></i> Edit Profile</a>
+                    <i class="fa-solid fa-pencil"></i>Edit Profile</a>
             </li>
 
-            <li class="nav-item">
-                <a sec:authorize="hasAuthority('Recruiter')" class="nav-link" th:href="@{/dashboard/add}">
-                    <i class="fas fa-file-circle-plus"></i> Post New Job</a>
+            <li class="nav-item ">
+                <a sec:authorize="hasAuthority('Recruiter')" class="nav-link" th:href="@{/dashboard/add}"
+                ><i class="fa-solid fa-file-circle-plus"></i>Post New Job</a
+                >
             </li>
             <li class="nav-item active">
-                <a sec:authorize="hasAuthority('Recruiter')" class="nav-link" th:href="@{/dashboard/}">
-                    <i class="fas fa-eye"></i> View Your Jobs</a>
+                <a sec:authorize="hasAuthority('Recruiter')" class="nav-link" th:href="@{/dashboard}"
+                > <i class="fa-solid fa-eye"></i>View Your Jobs</a
+                >
             </li>
-            <li class="nav-item">
-                <a sec:authorize="hasAuthority('Recruiter')" class="nav-link" th:href="@{/recruiter-profile/}">
-                    <i class="fas fa-pencil-alt"></i> Edit Account</a>
+            <li class="nav-item ">
+                <a sec:authorize="hasAuthority('Recruiter')" class="nav-link" th:href="@{/recruiter-profile/}"
+                > <i class="fa-solid fa-pencil"></i>Edit Account</a
+                >
             </li>
 
         </ul>
@@ -81,7 +75,7 @@
         <img
                 class="rounded-circle me-3"
                 height="50px"
-                width="50px"
+                width="50x"
                 th:if="${user.photosImagePath!=null}"
                 th:src="@{${user?.photosImagePath}}"
         />
@@ -94,9 +88,7 @@
         <label th:unless="${user.firstName != null && user.lastName != null}" th:text="${username}"
                class="nav-item nav-link px-2 me-3"></label>
 
-        <button class="myBtn-light me-5" onclick="window.location.href='/logout'">
-            <i class="fas fa-sign-out-alt"></i> Logout
-        </button>
+        <button class="myBtn-light me-5" onclick="window.location.href='/logout'">Logout</button>
     </div>
 </header>
 
@@ -109,7 +101,7 @@
         </div>
         <div class="box mt-3">
             <label class="large-label px-3 mb-3" sec:authorize="hasAuthority('Job Seeker')">Search Results</label>
-            <th:block th:each="jobPost : ${jobPost}">
+            <th:block th:each="jobPost:${jobPost}">
                 <a
                         th:href="@{/job-details-apply/{id}(id=${jobPost.jobPostId})}"
                         style="text-decoration: none; color: black"
@@ -127,27 +119,32 @@
                                             sec:authorize="hasAuthority('Recruiter')"
                                             th:text="'('+ ${jobPost.totalCandidates}+' Candidates Applied)'"
                                     >(xx candidates applied)</span>
+                                    >
                                     <span
                                             class="title-span"
                                             sec:authorize="hasAuthority('Job Seeker')"
                                             th:if="${jobPost.isActive == true}"
-                                    >(Applied)</span>
+                                    >(Applied)</span
+                                    >
                                     <span
                                             class="title-span"
                                             sec:authorize="hasAuthority('Job Seeker')"
                                             th:if="${jobPost.isSaved == true}"
-                                    >(Saved)</span>
+                                    >(Saved)</span
+                                    >
                                 </label>
                             </div>
                             <div class="col-md-4 text-center">
                                 <label
                                         th:text="${jobPost.jobLocationId.city+', '+ jobPost.jobLocationId.state}"
                                 >
-                                    City State</label>
+                                    City State</label
+                                >
                             </div>
                             <div class="col-md-4 text-right">
-                                <label th:text="${jobPost.jobCompanyId.name}">
-                                    Recruiter Company Name</label>
+                                <label th:text="@{${jobPost.jobCompanyId.name}}"
+                                >Recruiter Company Name</label
+                                >
                             </div>
                         </div>
                     </div>
