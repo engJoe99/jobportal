@@ -4,7 +4,6 @@ package com.luv2code.jobportal.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "job_location")
 public class JobLocation {
 
     @Id
@@ -14,7 +13,6 @@ public class JobLocation {
     private String city;
     private String state;
     private String country;
-
 
     public JobLocation() {
     }
@@ -67,7 +65,4 @@ public class JobLocation {
                 ", country='" + country + '\'' +
                 '}';
     }
-
-
-
 }

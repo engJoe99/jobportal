@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 @Entity
 @Table(uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"jobId", "job"})
+        @UniqueConstraint(columnNames = {"userId", "job"})
 })
 public class JobSeekerSave implements Serializable {
 
@@ -16,7 +16,7 @@ public class JobSeekerSave implements Serializable {
     private Integer id;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "jobId", referencedColumnName = "userAccountId")
+    @JoinColumn(name = "userId", referencedColumnName = "user_account_id")
     private JobSeekerProfile userId;
 
     @ManyToOne(cascade = CascadeType.ALL)
@@ -31,7 +31,6 @@ public class JobSeekerSave implements Serializable {
         this.userId = userId;
         this.job = job;
     }
-
 
     public Integer getId() {
         return id;
@@ -56,7 +55,6 @@ public class JobSeekerSave implements Serializable {
     public void setJob(JobPostActivity job) {
         this.job = job;
     }
-
 
     @Override
     public String toString() {

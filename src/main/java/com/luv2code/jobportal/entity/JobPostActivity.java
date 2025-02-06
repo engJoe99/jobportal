@@ -8,7 +8,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.util.Date;
 
 @Entity
-@Table(name = "job_post_activity")
 public class JobPostActivity {
 
     @Id
@@ -28,10 +27,10 @@ public class JobPostActivity {
     private JobCompany jobCompanyId;
 
     @Transient
-    private boolean isActive;
+    private Boolean isActive;
 
     @Transient
-    private boolean isSaved;
+    private Boolean isSaved;
 
     @Length(max = 10000)
     private String descriptionOfJob;
@@ -42,16 +41,12 @@ public class JobPostActivity {
 
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     private Date postedDate;
-
     private String jobTitle;
 
     public JobPostActivity() {
     }
 
-    public JobPostActivity(Integer jobPostId, Users postedById, JobLocation jobLocationId,
-                           JobCompany jobCompanyId, boolean isActive, boolean isSaved, String descriptionOfJob,
-                           String jobType, String salary, String remote, Date postedDate, String jobTitle) {
-
+    public JobPostActivity(Integer jobPostId, Users postedById, JobLocation jobLocationId, JobCompany jobCompanyId, Boolean isActive, Boolean isSaved, String descriptionOfJob, String jobType, String salary, String remote, Date postedDate, String jobTitle) {
         this.jobPostId = jobPostId;
         this.postedById = postedById;
         this.jobLocationId = jobLocationId;
@@ -98,19 +93,19 @@ public class JobPostActivity {
         this.jobCompanyId = jobCompanyId;
     }
 
-    public boolean isActive() {
+    public Boolean getIsActive() {
         return isActive;
     }
 
-    public void setActive(boolean active) {
+    public void setIsActive(Boolean active) {
         isActive = active;
     }
 
-    public boolean isSaved() {
+    public Boolean getIsSaved() {
         return isSaved;
     }
 
-    public void setSaved(boolean saved) {
+    public void setIsSaved(Boolean saved) {
         isSaved = saved;
     }
 
@@ -162,7 +157,6 @@ public class JobPostActivity {
         this.jobTitle = jobTitle;
     }
 
-
     @Override
     public String toString() {
         return "JobPostActivity{" +
@@ -180,11 +174,4 @@ public class JobPostActivity {
                 ", jobTitle='" + jobTitle + '\'' +
                 '}';
     }
-
-
-
-
-
 }
-
-

@@ -121,7 +121,8 @@ public class UsersService {
     }
 
 
-
-
-
+    public Users findByEmail(String currentUsername) {
+        return usersRepository.findByEmail(currentUsername).orElseThrow(() -> new
+                UsernameNotFoundException("User not found"));
+    }
 }
